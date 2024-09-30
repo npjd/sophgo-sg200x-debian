@@ -1,4 +1,18 @@
-# Debian Images for Sophgo cv181x/sg200x based boards 
+# Nuha Debian for Duo-s
+This is a fork of Fishwaldo's Debian build for the Milk-V duo-s.
+
+## Building
+```
+git submodule init
+git submodule update
+./build_docker.sh
+./build_image.sh
+```
+
+
+Below are the readme contents from the original repo:
+
+## Debian Images for Sophgo cv181x/sg200x based boards 
 This repository builds debian sid images for Sophgo cv181x/sg200x based boards such as MilkV Duo256/DuoS and Sipeed LicheeRvNano.
 
 (Note, we don't support the MilkV Duo, as it does not have enough ram to run Debian)
