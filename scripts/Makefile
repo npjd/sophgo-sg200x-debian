@@ -38,8 +38,8 @@ NPROCS := $(shell nproc)
 $(BUILDDIR)/linux-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out Kernel for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b sg200x-dev --depth 5 https://github.com/sophgo/linux_5.10.git /build/kernel
-	@cd $(BUILDDIR)/kernel && git checkout 8b8fbf8
+	@cp -r ./sdk/linux_5.10 $(BUILDDIR)/kernel
+	@cd $(BUILDDIR)/kernel
 	@touch $@
 
 $(BUILDDIR)/linux-prepare-patch-stamp: $(BUILDDIR)/linux-prepare-checkout-stamp
@@ -79,14 +79,14 @@ linux-clean:
 $(BUILDDIR)/uboot-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out U-Boot for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone --depth 1 https://github.com/milkv-duo/u-boot-2021.10.git $(BUILDDIR)/u-boot
-	@cd $(BUILDDIR)/u-boot && git checkout a57aa1f
+	@cp -r ./sdk/u-boot-2021.10 $(BUILDDIR)/u-boot
+	@cd $(BUILDDIR)/u-boot
 	@touch $@
 
 $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/uboot-prepare-checkout-stamp
 	@echo "$(COLOUR_GREEN)Patching U-Boot for $(BOARD)$(END_COLOUR)"
-	@$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
+	# @$(foreach file, $(wildcard /configs/common/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
+	# @$(foreach file, $(wildcard /configs/$(BOARD)/patches/u-boot/*.patch), cd $(BUILDDIR)/u-boot && git apply --ignore-whitespace $(file);)
 	@cp /configs/$(BOARD)/u-boot/defconfig $(BUILDDIR)/u-boot/configs/$(BOARD)_defconfig
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)/*), cp $(file) $(BUILDDIR)/u-boot/arch/riscv/dts/;)
 	@$(foreach file, $(wildcard /configs/common/dts/$(CHIP)_$(ARCH)/*), cp $(file) $(BUILDDIR)/u-boot/arch/riscv/dts/;)
@@ -100,13 +100,13 @@ $(BUILDDIR)/uboot-prepare-patch-stamp: $(BUILDDIR)/uboot-prepare-checkout-stamp
 
 $(BUILDDIR)/uboot-prepare-configure-stamp: $(BUILDDIR)/uboot-prepare-patch-stamp
 	@echo "$(COLOUR_GREEN)Configuring U-Boot for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) BOARD=mars CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-" $(BOARD)_defconfig
+	@cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) BOARD=cv181x CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-" $(BOARD)_defconfig
 	@touch $@
 
 $(BUILDDIR)/uboot-compile-stamp: $(BUILDDIR)/uboot-prepare-configure-stamp
 	@echo "$(COLOUR_GREEN)Building U-Boot for $(BOARD)$(END_COLOUR)"
-	@cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) BOARD=mars CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-"
-	@cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) BOARD=mars CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-" u-boot-initial-env
+	@cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) BOARD=cv181x CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-"
+	@cd $(BUILDDIR)/u-boot/ && $(MAKE) -j$(NPROCS) BOARD=cv181x CONFIG_USE_DEFAULT_ENV=y STORAGE_TYPE=$(STORAGE_TYPE) CHIP=$(UBOOT_CHIP) CVIBOARD=$(UBOOT_BOARD) CROSS_COMPILE="/host-tools/gcc/riscv64-linux-musl-x86_64/bin/riscv64-unknown-linux-musl-" u-boot-initial-env
 	@cp $(BUILDDIR)/u-boot/u-boot.bin $(BUILDDIR)
 	@cp $(BUILDDIR)/u-boot/u-boot.dtb $(BUILDDIR)
 	@cp $(BUILDDIR)/u-boot/u-boot-initial-env $(BUILDDIR)
@@ -122,8 +122,12 @@ uboot-clean:
 $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out OpenSBI for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b sg200x-dev --depth 1 https://github.com/sophgo/opensbi.git $(BUILDDIR)/opensbi
-	@cd $(BUILDDIR)/opensbi && git checkout 216793f
+	# @git clone -b sg200x-dev --depth 1 https://github.com/sophgo/opensbi.git $(BUILDDIR)/opensbi
+	# @cd $(BUILDDIR)/opensbi && git checkout 216793f
+	# @cd $(BUILDDIR)/opensbi
+# Try using the duo-buildroot-sdk version instead of directly from sophgo github
+	@cp -r ./sdk/opensbi $(BUILDDIR)/opensbi
+	@cd $(BUILDDIR)/opensbi
 #	git clone https://github.com/riscv-software-src/opensbi.git $(BUILDDIR)/opensbi
 #	@cd $(BUILDDIR)/opensbi && git checkout a2b255b
 	@touch $@
@@ -131,8 +135,8 @@ $(BUILDDIR)/opensbi-prepare-checkout-stamp:
 
 $(BUILDDIR)/opensbi-prepare-patch-stamp: $(BUILDDIR)/opensbi-prepare-checkout-stamp
 	@echo "$(COLOUR_GREEN)Patching OpenSBI for $(BOARD)$(END_COLOUR)"
-	@$(foreach file, $(wildcard /configs/common/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
+	# @$(foreach file, $(wildcard /configs/common/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
+	# @$(foreach file, $(wildcard /configs/$(BOARD)/patches/opensbi/*.patch), cd $(BUILDDIR)/opensbi && git apply --ignore-whitespace $(file);)
 	@touch $@
 
 $(BUILDDIR)/opensbi-compile-stamp: $(BUILDDIR)/opensbi-prepare-patch-stamp $(BUILDDIR)/uboot-compile-stamp
@@ -151,14 +155,14 @@ opensbi-clean:
 $(BUILDDIR)/fsbl-prepare-checkout-stamp:
 	@echo "$(COLOUR_GREEN)Checking out FSBL for $(BOARD)$(END_COLOUR)"
 	@mkdir -p $(BUILDDIR)
-	@git clone -b milkv --depth 1 https://github.com/milkv-duo/fsbl.git $(BUILDDIR)/fsbl
-	@cd $(BUILDDIR)/fsbl && git checkout beb1483
+	@cp -r ./sdk/fsbl $(BUILDDIR)/fsbl
+	@cd $(BUILDDIR)/fsbl
 	@touch $@
 
 $(BUILDDIR)/fsbl-prepare-patch-stamp: $(BUILDDIR)/fsbl-prepare-checkout-stamp
 	@echo "$(COLOUR_GREEN)Patching FSBL for $(BOARD)$(END_COLOUR)"
-	@$(foreach file, $(wildcard /configs/common/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
-	@$(foreach file, $(wildcard /configs/$(BOARD)/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
+	# @$(foreach file, $(wildcard /configs/common/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
+	# @$(foreach file, $(wildcard /configs/$(BOARD)/patches/fsbl/*.patch), cd $(BUILDDIR)/fsbl && git apply --ignore-whitespace $(file);)
 	@python3 /builder/python/mmap_conv.py --type h /configs/$(BOARD)/memmap.py $(BUILDDIR)/fsbl/plat/$(CHIP)/include/cvi_board_memmap.h
 	@printf '\163\000\120\020\157\360\337\377' > $(BUILDDIR)/fsbl/blank.bin
 	@touch $@
@@ -197,7 +201,8 @@ $(BUILDDIR)/image-prepare-stamp:
 	@rm -rf /rootfs/
 	@-rm $(addon-targets)
 	@mkdir -p /rootfs/
-	@curl -s https://sophgo.my-ho.st:8443/public-key.asc -o $(BUILDDIR)/public-key.asc
+	# @curl -s https://sophgo.my-ho.st:8443/public-key.asc -o $(BUILDDIR)/public-key.asc
+	@curl -s https://sophgo.my-ho.st/public-key.asc -o $(BUILDDIR)/public-key.asc
 	@apt-key add $(BUILDDIR)/public-key.asc
 	@mmdebstrap -v --architectures=riscv64 --include="$(_PACKAGES)" sid "/rootfs/" "deb http://deb.debian.org/debian/ sid main" "deb https://sophgo.my-ho.st:8443/ debian sophgo"
 	@touch $@

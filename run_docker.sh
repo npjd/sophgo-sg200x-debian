@@ -4,4 +4,4 @@ docker run --privileged -it --rm \
     -v ./image:/output \
     -v $(pwd)/duo-buildroot-sdk:/builder/sdk \
     builder \
-    make BOARD=duos image
+    /bin/bash
