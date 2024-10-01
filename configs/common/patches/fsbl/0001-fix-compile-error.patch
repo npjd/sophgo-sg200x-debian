@@ -1,7 +1,7 @@
-diff --git a/fsbl/plat/cv181x/bl2/bl2_main.c b/fsbl/plat/cv181x/bl2/bl2_main.c
+diff --git a/plat/cv181x/bl2/bl2_main.c b/plat/cv181x/bl2/bl2_main.c
 index fcc0c8e2e..759378e75 100644
---- a/fsbl/plat/cv181x/bl2/bl2_main.c
-+++ b/fsbl/plat/cv181x/bl2/bl2_main.c
+--- a/plat/cv181x/bl2/bl2_main.c
++++ b/plat/cv181x/bl2/bl2_main.c
 @@ -9,6 +9,7 @@
  #ifdef RTOS_ENABLE_FREERTOS
  int init_comm_info(int ret)
