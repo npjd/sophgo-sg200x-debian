@@ -1,0 +1,13 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          configure-pinmux
+# Required-Start:    $local_fs $network
+# Required-Stop:     $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Configure pins for I2C/GPIO
+### END INIT INFO
+
+# Configure i2c pins
+/usr/bin/duo-pinmux -w B13/IIC2_SCL
+/usr/bin/duo-pinmux -w B14/IIC2_SDA

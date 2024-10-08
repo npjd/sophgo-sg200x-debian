@@ -4,3 +4,4 @@ $(BUILDDIR)/duo-pinmux-stamp:
 	@cp addons/duo-pinmux/ld-musl-riscv64v0p7_xthead.so.1 /rootfs/lib/
 	@chmod +x /rootfs/usr/bin/duo-pinmux
 	@chmod +rw /rootfs/lib/ld-musl-riscv64v0p7_xthead.so.1
+	@cp addons/duo-pinmux/configure-pinmux /rootfs/etc/init.d/
