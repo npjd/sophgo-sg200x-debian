@@ -73,7 +73,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: ghcr.io/npjd/sophgo-sg200x-debian:master
-          options: --privileged -v ${{ github.workspace }}/images/:/output -v ${{ github.workspace }}/configs/:/configs/ -v ${{ github.workspace }}/duo-buildroot-sdk:/:/builder/sdk
+          options: --privileged -v ${{ github.workspace }}/images/:/output -v ${{ github.workspace }}/configs/:/configs/ -v ${{ github.workspace }}/duo-buildroot-sdk/:/builder/sdk
           run: |
             make BOARD=${{ matrix.boards }} STORAGE_TYPE=${{ matrix.storage }} image
             chmod 777 /output/
