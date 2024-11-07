@@ -67,6 +67,8 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Get Board Configs
         uses: actions/checkout@v4
+        with:
+          submodules: true
       - name: Build Images
         uses: addnab/docker-run-action@v3
         with:
